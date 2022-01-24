@@ -1,21 +1,28 @@
-FROM ubuntu:16.04
-
-# first update the ubunute system
-RUN apt-get update
+FROM ubuntu:18.04
 
 
-# To solve add-apt-repository : command not found
-RUN apt-get -y install software-properties-common
+ 
+# Install "software-properties-common" (for the "add-apt-repository")
+RUN apt-get update && apt-get install -y \
+    software-properties-common
+# Add the "JAVA" ppa
+RUN add-apt-repository -y \
+    ppa:webupd8team/java
 
-# Install Java
-RUN \
-  echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
-  add-apt-repository -y ppa:webupd8team/java && \
-  apt-get update && \
-  apt-get install -y oracle-java8-installer --allow-unauthenticated && \
-  rm -rf /var/lib/apt/lists/* && \
-  rm -rf /var/cache/oracle-jdk8-installer
+# Install OpenJDK-8
+RUN apt-get update && \
+    apt-get install -y openjdk-8-jdk && \
+    apt-get install -y ant && \
+    apt-get clean;
 
+# Fix certificate issues
+RUN apt-get update && \
+    apt-get install ca-certificates-java && \
+    apt-get clean && \
+    update-ca-certificates -f \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /var/cache/oracle-jdk8-installer
 
-# Define commonly used JAVA_HOME variable
-ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+# Setup JAVA_HOME -- useful for docker commandline
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
+RUN export JAVA_HOME

@@ -1,13 +1,17 @@
-# Ubunut 15.04 with java 8 installed
-# Build image with: docker build -t repo/image:lastest
+FROM ubuntu:16.04
+
+# To solve add-apt-repository : command not found
+RUN apt-get -y install software-properties-common
+
+# Install Java
+RUN \
+  echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
+  add-apt-repository -y ppa:webupd8team/java && \
+  apt-get update && \
+  apt-get install -y oracle-java8-installer --allow-unauthenticated && \
+  rm -rf /var/lib/apt/lists/* && \
+  rm -rf /var/cache/oracle-jdk8-installer
 
 
-FROM ubunut:15.04
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y software-properties-common && \
-    add-apt-repository ppa:webupd8team/java -y && \
-    apt-get udpate && \
-    echo oracle-java7-installeer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
-    apt-get install -y oracle-java7-installer && \
-    apt-get clean
+# Define commonly used JAVA_HOME variable
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle

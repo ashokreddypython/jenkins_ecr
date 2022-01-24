@@ -1,5 +1,9 @@
 FROM ubuntu:16.04
 
+# first update the ubunute system
+RUN apt-get update
+
+
 # To solve add-apt-repository : command not found
 RUN apt-get -y install software-properties-common
 
